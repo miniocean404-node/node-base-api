@@ -2,5 +2,10 @@
   "name": "node-api",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "packageManager": "yarn@1.22.18",
+  "type": "module",
+  "devDependencies": {
+    "prettier": "^2.7.1"
+  }
 }
