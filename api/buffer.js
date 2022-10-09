@@ -10,6 +10,8 @@
 // ucs2: 'utf16le' 的别名。 UCS-2 过去指的是 UTF-16 的一种变体，它不支持代码点大于 U+FFFF 的字符。 在 Node.js 中，始终支持这些代码点。
 
 // 手动分配 buffer 内存，不会使用预先分配的 buffer 池
+import * as buffer from "buffer";
+
 const buf1 = Buffer.alloc(10, 3, "base64");
 
 // 用于池的预分配内部 Buffer 实例的大小（以字节为单位）。 该值可以修改
@@ -23,8 +25,18 @@ buf1.buffer;
 buf1.byteOffset;
 // 返回迭代器 index value
 buf1.entries();
-// 返回 buffer 的index
+// 返回 buffer 的 index
 buf1.keys();
+// 返回 buffer 的 value
+buf1.values();
+// buffer 的 json 表示形式，Buffer.from() 接受从此方法返回的格式的对象。
+buf1.toJSON();
+// 根据 encoding 中指定的字符编码将 buf 解码为字符串。 start 和 end 可以传入仅解码 buf 的子集
+// 如果 encoding 是 'utf8' 并且输入中的字节序列不是有效的 UTF-8，则每个无效字节都将替换为替换字符 U+FFFD。
+buf1.toString("utf8", 0, 3);
+// 根据 encoding 中的字符编码将 string 写入 buf 的 offset 处。 length 参数是要写入的字节数（写入的字节数不会超过 buf.length - offset）。
+// 如果 buf 没有足够的空间来容纳整个字符串，则只会写入 string 的一部分。 但是，不会写入部分编码的字符。
+buf1.write("str", 0, 2, "utf8");
 
 // 使用 Buffer.alloc() 来用零初始化 Buffer 实例
 // Buffer 模块预先分配了大小为 Buffer.poolSize 的内部 Buffer 实例作为池，用于快速分配使用 Buffer.allocUnsafe()、Buffer.from(array)、Buffer.concat() 创建的新 Buffer 实例，
@@ -76,4 +88,25 @@ const index = buf1.indexOf("is");
 const index2 = buf1.lastIndexOf("is");
 
 // 返回新的 Buffer，其引用与原始缓冲区相同的内存，但由 start 和 end 索引进行偏移和裁剪。
-const buffer9 = buf1.subarray();
+const buf9 = buf1.subarray(0, 3);
+
+// 返回新的 Buffer，其引用与原始缓冲区相同的内存，但由 start 和 end 索引进行偏移和裁剪。
+const buf10 = buf1.slice(0, 3);
+
+// 虽然 Buffer 对象可作为全局对象使用，但还有其他与 Buffer 相关的 API 仅可通过使用 require('buffer') 访问的 buffer 模块使用。
+// 返回调用 buf.inspect() 时将返回的最大字节数。
+// 默认值: 50
+buffer.INSPECT_MAX_BYTES;
+
+// buffer.constants.MAX_LENGTH 的别名。
+// 单个 Buffer 实例允许的最大大小。
+buffer.kMaxLength;
+
+// 将给定的 Buffer 或 Uint8Array 实例从一种字符编码重新编码为另一种。 返回新的 Buffer 实例。
+const buf11 = buffer.transcode(Buffer.from("€"), "utf8", "ascii");
+
+// 常量
+// 单个 Buffer 实例允许的最大大小。
+buffer.constants.MAX_LENGTH;
+// 单个 string 实例允许的最大长度。
+buffer.constants.MAX_STRING_LENGTH;
