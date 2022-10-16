@@ -1,7 +1,6 @@
-import cluster from "cluster";
-import http from "http";
-import os from "os";
 
+## 属性
+```js
 // 调度策略
 // cluster.SCHED_RR 用于循环或 cluster.SCHED_NONE 将其留给操作系统。 这是全局的设置，一旦衍生第一个工作进程或调用 .setupMaster()（以先到者为准），就会有效地冻结。
 // SCHED_RR 是除 Windows 之外的所有操作系统的默认值。 一旦 libuv 能够有效地分发 IOCP 句柄而不会导致大量性能损失，则 Windows 将更改为 SCHED_RR。
@@ -28,6 +27,13 @@ cluster.settings;
 // 唯一不能通过 .setupMaster() 设置的工作进程属性是传给 .fork() 的 env。
 // 上述默认值仅适用于第一次调用；
 cluster.setupPrimary(cluster.settings);
+```
+
+## 使用
+```js
+import cluster from "cluster";
+import http from "http";
+import os from "os";
 
 if (cluster.isPrimary) {
   console.log("主线程 pid", process.pid);
@@ -147,3 +153,5 @@ if (cluster.isWorker) {
     () => {}
   );
 }
+
+```

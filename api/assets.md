@@ -1,5 +1,8 @@
-// http://nodejs.cn/api-v12/assert.html#assertvalue-message
+# 断言
+http://nodejs.cn/api-v12/assert.html#assertvalue-message
 
+## 自定义断言
+```js
 import assert from "assert";
 
 // 生成 AssertionError(断言错误)，以便稍后比较错误信息：
@@ -9,25 +12,36 @@ const assertionError = new assert.AssertionError({
   operator: "strictEqual", // 操作
 });
 
-// 验证错误的输出：
+// 自定义断言验证错误的输出：
 try {
-  assert.strictEqual(1, 2);
+    assert.strictEqual(1, 2);
 } catch (err) {
-  assert(err instanceof assert.AssertionError);
-  assert.strictEqual(err.message, assertionError.message);
-  assert.strictEqual(err.name, "AssertionError");
-  assert.strictEqual(err.actual, assertionError.actual);
-  assert.strictEqual(err.expected, assertionError.expected);
-  assert.strictEqual(err.code, assertionError.code);
-  assert.strictEqual(err.operator, assertionError.operator);
-  assert.strictEqual(err.generatedMessage, assertionError.generatedMessage);
+    assert(err instanceof assert.AssertionError);
+    assert.strictEqual(err.message, assertionError.message);
+    assert.strictEqual(err.name, "AssertionError");
+    assert.strictEqual(err.actual, assertionError.actual);
+    assert.strictEqual(err.expected, assertionError.expected);
+    assert.strictEqual(err.code, assertionError.code);
+    assert.strictEqual(err.operator, assertionError.operator);
+    assert.strictEqual(err.generatedMessage, assertionError.generatedMessage);
 }
+```
 
+# Boole 断言
+```js
 assert(true, "断言false时提醒，== 断言");
 
+// 直接断言错误，展示提示
+// assert.fail("错误");
+// 值不为真时错误
+assert.ok(1, "值是否为真");
+```
+
+## 值比较断言
+```js
 // deepEqual 弃用
 assert.strictEqual("1", "1", "不相等时候断言错误");
-assert.notDeepEqual(1, 2, "两个值相等");
+assert.notDeepEqual(1, 2, "两个值相等断言错误");
 
 // deepStrictEqual 比较详情：
 // 使用 Object.is() 使用的 SameValue 比较来比较原始值
@@ -42,16 +56,28 @@ assert.notDeepEqual(1, 2, "两个值相等");
 assert.deepStrictEqual({ a: 1 }, { a: 1 }, "两个值不一致时提示");
 // 与 assert.deepStrictEqual 相反
 assert.notDeepStrictEqual({ a: 2 }, { a: 1 }, "两个值一致时提示");
+```
 
+## 正则断言
+```js
 // 检查正则有匹配项时断言错误
 assert.doesNotMatch("I will pass", /不会匹配/gims, "正则匹配时候报错");
 // 检查正则没有匹配项时断言错误
 assert.match("I will fail", /fail/);
+```
 
+## Promise 断言
+```js
 // 不是 promise 且 promise 拒绝时断言错误
 assert.doesNotReject(Promise.resolve(1), SyntaxError).then();
 // 不是 promise 且 promise 不是拒绝时断言错误
 assert.rejects(Promise.reject("1")).then();
+```
+
+## Error 断言
+```js
+// 如果 value 不是 undefined 或 null，则断言错误
+assert.ifError(null);
 
 // 函数抛出异常时断言错误
 // 第二个值为正则且异常和正则匹配则断言错误
@@ -65,11 +91,4 @@ assert.doesNotThrow(
 assert.throws(() => {
   throw new TypeError();
 }, /TypeError/);
-
-// 直接断言错误，展示提示
-// assert.fail("错误");
-// 值不为真时错误
-assert.ok(1, "值是否为真");
-
-// 如果 value 不是 undefined 或 null，则断言错误
-assert.ifError(null);
+```

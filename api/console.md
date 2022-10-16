@@ -1,3 +1,7 @@
+# console
+
+## 初始化
+```js
 const { Console } = console;
 
 const myConsole = Console({
@@ -8,7 +12,10 @@ const myConsole = Console({
   // inspectOptions // 指定传给 util.inspect() 的选项。
   groupIndentation: 2, // 缩进距离 用于 group
 });
+```
 
+## API
+```js
 // 默认 default , 计数参数 id 的调用次数 ，countReset 重置
 myConsole.count("default");
 myConsole.countReset();
@@ -49,3 +56,4 @@ console.profileEnd("MyLabel");
 
 // 检查器时间戳
 console.timeStamp("label");
+```
