@@ -117,8 +117,8 @@ if (isMainThread) {
   markAsUntransferable(pooledBuffer);
 
   // 1. 将 MessagePort 传输到不同的 vm 上下文 原始的 port 对象将无法使用，返回的 MessagePort 实例将取而代之。(将 port 传递到新的 vm 上下文中)
-  // 返回的 MessagePort 将是目标上下文中的对象，并将继承自其全局 Object 类。 传给 port.onmessage() 监听器的对象也将在目标上下文中创建并从其全局 Object 类继承。
-  // 但是，创建的 MessagePort 将不再继承 EventEmitter，只能使用 port.onmessage() 来接收使用它的事件。
+  // 2. 返回的 MessagePort 将是目标上下文中的对象，并将继承自其全局 Object 类。 传给 port.onmessage() 监听器的对象也将在目标上下文中创建并从其全局 Object 类继承。
+  // 3. 但是，创建的 MessagePort 将不再继承 EventEmitter，只能使用 port.onmessage() 来接收使用它的事件。
   const context = { a: 1 };
   vm.createContext(context);
   const newPort = moveMessagePortToContext(port1, context);
