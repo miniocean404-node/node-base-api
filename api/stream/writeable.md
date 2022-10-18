@@ -13,7 +13,18 @@ Writable 流的示例包括：
 ## Writable 类
 ### 初始化
 ```js
-const ws = new stream.Writable();
+const ws = new Writable({
+    highWaterMark: 16384, // stream.write() 开始返回 false 时的缓冲级别。 默认值: 16384 (16KB) 或 16 表示 objectMode 流。
+    decodeStrings: true, // 是否将传给 stream.write() 的 string 编码为 Buffer（使用 stream.write() 调用中指定的编码），然后再将它们传给 stream._write()。 其他类型的数据不会被转换（即 Buffer 不会被解码为 string）。 设置为 false 将阻止 string 被转换。 默认值: true。
+    defaultEncoding: "utf-8", // 没有将编码指定为 stream.write() 的参数时使用的默认编码。 默认值: 'utf8'。
+    objectMode: false, //  stream.write(anyObj) 是否为有效操作。 当设置后，如果流实现支持，则可以写入字符串、Buffer 或 Uint8Array 以外的 JavaScript 值。 默认值: false。
+    emitClose: true, // 流被销毁后是否应该触发 'close'。 默认值: true。
+    autoClose:false, // 此流是否应在结束后自动调用自身的 .destroy()。 默认值: false。
+    write: (chunk, encoding, callback) => {}, // stream._write() 方法的实现。
+    writev: (chunks, callback) => {}, // stream._writev() 方法的实现。
+    destroy: () => {}, // stream._destroy() 方法的实现。
+    final: () => {}, // stream._final() 方法的实现。
+});
 ```
 
 ### 属性
