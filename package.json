@@ -7,5 +7,8 @@
   "type": "module",
   "devDependencies": {
     "prettier": "^2.7.1"
+  },
+  "volta": {
+    "node": "16.18.0"
   }
 }
