@@ -1,4 +1,4 @@
-const dgram = require("dgram");
+const dgram = require("api/network/dgram");
 const udp4 = dgram.createSocket("udp4");
 
 // 'connect' 事件在套接字关联到远程地址作为成功的 connect() 调用的结果之后触发。
