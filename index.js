@@ -1,5 +1,6 @@
-const net = require("net");
-const path = require("path");
-const dns = require("dns");
+const { Agent } = require("http");
+const http = require("http");
 
-net.createServer();
+const agent = new Agent();
+
+// const socket = agent.createConnection({ port: 80 });

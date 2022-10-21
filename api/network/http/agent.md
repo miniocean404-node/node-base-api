@@ -78,3 +78,49 @@ agent.createConnection(
         (err, stream) => {}
 );
 ```
+
+## 属性
+```js
+// 当启用 keepAlive 时，包含当前等待代理使用的套接字数组的对象
+agent.freeSockets;
+
+// 默认设置为 256。 对于启用了 keepAlive 的代理，这将设置在空闲状态下将保持打开的最大套接字数量。
+agent.maxFreeSockets
+
+// 默认设置为 Infinity。 确定代理可以为每个来源打开多少个并发套接字
+agent.maxSockets
+
+// 默认设置为 Infinity。 确定代理可以打开多少个并发套接字。 与 maxSockets 不同，此参数适用于所有来源
+agent.maxTotalSockets
+
+// 包含尚未分配给套接字的请求队列的对象。不要修改。
+agent.requests
+
+// 包含代理当前正在使用的套接字数组的对象。 不要修改。
+agent.sockets
+```
+
+## 方法
+```js
+// 此方法可以被特定的 Agent 子类覆盖。 如果此方法返回假值，则套接字将被销毁，而不是将其持久化以供下一个请求使用。
+// 当 socket 从请求中分离并且可以由 Agent 持久化时调用。 默认行为是：
+// socket.setKeepAlive(true, this.keepAliveMsecs);
+// socket.unref();
+// return true;
+agent.keepSocketAlive(socket);
+
+// 当 socket 由于保持活动选项而持久化后附加到 request 时调用
+agent.reuseSocket(socket, http.request());
+
+// 获取一组请求选项的唯一名称，以确定是否可以重用连接。 对于 HTTP 代理，则这将返回 host:port:localAddress 或 host:port:localAddress:family。
+// 对于 HTTPS 代理，则名称包括 CA、证书、密码和其他确定套接字可重用性的 HTTPS/TLS 特定选项。
+agent.getName({
+   host: "www.baidu.com", // 向其发出请求的服务器的域名或 IP 地址
+   port: 80, // 远程服务器端口
+   localAddress: "127.0.0.1", // 发出请求时绑定网络连接的本地接口
+   family: 4,
+});
+
+// 销毁代理当前正在使用的所有套接字。
+agent.destroy();
+```
