@@ -4,8 +4,8 @@
 ```js
 // 创建新的 TCP 或 IPC 服务器。服务器可以是 TCP 服务器或 IPC 服务器，这取决于其 listen() 什么
 const server = new net.Server({
-  allowHalfOpen: false,
-  pauseOnConnect: false, //true的话每个传入连接关联的套接字将被暂停，并且不会从其句柄读取数据。 这允许在进程之间传递连接，而原始进程不会读取任何数据。 要开始从暂停的套接字读取数据，则调用 socket.resume()
+  allowHalfOpen: false, // 如果 allowHalfOpen 设置为 true，套接字将不会自动将其可写端 end()，从而允许用户写入任意数量的数据。 用户必须显式调用 end() 来关闭连接（即发回一个 FIN 数据包）
+  pauseOnConnect: false, // true 的话每个传入连接关联的套接字将被暂停，并且不会从其句柄读取数据。 这允许在进程之间传递连接，而原始进程不会读取任何数据。 要开始从暂停的套接字读取数据，则调用 socket.resume()
 });
 
 const server2 = net.createServer(
@@ -20,25 +20,41 @@ const server2 = net.createServer(
 
 ## 事件
 ```js
-// 服务器关闭时触发。
-server.on("close", () => {});
+// 在调用 server.listen() 后绑定服务器时触发。
+server.on("listening", () => {
+    const info = server.address();
+    console.log(`TCP 服务 ${info.address}:${info.port}`);
+});
 
-// 建立新连接时触发。 socket 是 net.Socket 的实例。
-server.on("connection", (socket) => {});
+// 建立新连接时触发。 socket.是 net.Socket 的实例。
+server.on("connection", (client_sock) => {
+    console.log(
+        "客户端请求来了",
+        "ip:",
+        client_sock.remoteAddress,
+        "port",
+        client_sock.remotePort
+    );
+
+    client_sock.setEncoding("utf-8");
+    // 接收到客户端的数据，调用这个函数
+    client_sock.on("data", (data) => {
+        console.log("客户端数据");
+    });
+
+    // 向客户端响应
+    client_sock.write("拜拜", () => {
+        client_sock.end();
+    });
+});
 
 // 发生错误时触发。 与 net.Socket 不同，除非手动调用 server.close()，否则 'close' 事件不会在此事件之后直接触发。
 server.on("error", (err) => {});
 
-// 在调用 server.listen() 后绑定服务器时触发。
-server.on("listening", () => {});
-
-// 如果监听 IP 套接字，则返回操作系统报告的服务器的绑定 address、地址 family 名称和 port（用于在获取操作系统分配的地址时查找分配的端口）：{ port: 12346, family: 'IPv4', address: '127.0.0.1' }。
-// server.address() 在 'listening' 事件触发之前或调用 server.close() 之后返回 null。
-server.address();
-
-// 停止服务器接受新连接并保持现有连接。 该函数是异步的，当所有连接都结束并且服务器触发 'close' 事件时，则服务器最终关闭。 一旦 'close' 事件发生，则可选的 callback 将被调用。
-// 与该事件不同，如果服务器在关闭时未打开，它将以 Error 作为唯一参数被调用。
-server.close((err) => {});
+// 服务器关闭时触发。
+server.on("close", () => {
+    console.log("服务端关闭了");
+});
 ```
 
 ## 属性
@@ -53,6 +69,14 @@ server.maxConnections
 
 ## 方法
 ```js
+// 如果监听 IP 套接字，则返回操作系统报告的服务器的绑定 address、地址 family 名称和 port（用于在获取操作系统分配的地址时查找分配的端口）：{ port: 12346, family: 'IPv4', address: '127.0.0.1' }。
+// server.address() 在 'listening' 事件触发之前或调用 server.close() 之后返回 null。
+server.address();
+
+// 停止服务器接受新连接并保持现有连接。 该函数是异步的，当所有连接都结束并且服务器触发 'close' 事件时，则服务器最终关闭。 一旦 'close' 事件发生，则可选的 callback 将被调用。
+// 与该事件不同，如果服务器在关闭时未打开，它将以 Error 作为唯一参数被调用。
+server.close((err) => {});
+
 // 让服务活跃起来
 server.ref()
 
@@ -71,7 +95,7 @@ server.listen(
     {
         port: 3000,
         host: "0.0.0.0",
-        backlog: 511, // backlog 参数来指定待处理连接队列的最大长度。 实际长度将由操作系统通过 sysctl 设置确定，例如 Linux 上的 tcp_max_syn_backlog 和 somaxconn。 此参数的默认值为 511（不是 512）。
+        backlog: 511, // backlog 参数来指定待处理连接队列的最大长度。 实际长度将由操作系统通过 sysctl(系统) 设置确定，例如 Linux 上的 tcp_max_syn_backlog 和 somaxconn。 此参数的默认值为 511（不是 512）。
         path: "", // 如果指定了 port，则将被忽略。 请参阅标识 IPC 连接的路径 (Unix 域)。
         exclusive: false, // 当 exclusive 为 true 时，句柄不共享，尝试共享端口会导致错误。
         readableAll: false, // 对于 IPC 服务器，使管道对所有用户都可读。 默认值: false。

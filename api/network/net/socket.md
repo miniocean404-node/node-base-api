@@ -19,32 +19,49 @@ const socket = new net.Socket({
 
 ## 事件
 ```js
-// 一旦套接字完全关闭就触发。 参数 hadError 是布尔值，表示套接字是否由于传输错误而关闭。
-socket.on("close", (err) => {});
-
-// 当成功建立套接字连接时触发。 参见 net.createConnection()。
-socket.on("connect", () => {});
-
-// 接收到数据时触发。 参数 data 将是 Buffer 或 String。 数据的编码由 socket.setEncoding() 设置。
-socket.on("data", (data) => {});
-
-// 当写缓冲区变空时触发。 可用于限制上传。
-socket.on("drain", () => {});
-
-// 但是，如果 allowHalfOpen 设置为 true，套接字将不会自动将其可写端 end()，从而允许用户写入任意数量的数据。 用户必须显式调用 end() 来关闭连接（即发回一个 FIN 数据包）。
-socket.on("end", () => {});
-
-// 发生错误时触发。 'close' 事件将在此事件之后直接调用。
-socket.on("error", () => {});
+// 接收到数据时触发。 参数 data 将是 Buffer 或 String。 数据的编码由 client.setEncoding() 设置。
+client.on("data", (data) => {
+    console.log("服务端数据：", data.toString());
+});
 
 // 在解析主机名之后但在连接之前触发。 不适用于 Unix 套接字。
-socket.on("lookup", (err, address, family, host) => {});
+client.on("lookup", (err, address, family, host) => {});
+
+// 当成功建立套接字连接时触发。 参见 net.createConnection()。
+client.on("connect", () => {});
 
 // 当套接字准备好使用时触发。'connect' 后立即触发。
-socket.on("ready", () => {});
+client.on("ready", () => {
+    client.write(`我是 ${client.address()}`, "utf-8", () => {});
+
+    client.end();
+});
+
+// 当写缓冲区变空时触发。 可用于限制上传。
+client.on("drain", () => {});
 
 // 如果套接字因不活动而超时则触发。 这只是通知套接字已空闲。 用户必须手动关闭连接。
-socket.on('timeout',()=>{})
+client.on("timeout", () => {});
+
+// 发生错误时触发。 'close' 事件将在此事件之后直接调用。
+client.on("error", (err) => {
+    console.log("客户端错误:", err);
+});
+
+// 但是，如果 allowHalfOpen 设置为 true，套接字将不会自动将其可写端 end()，从而允许用户写入任意数量的数据。 用户必须显式调用 end() 来关闭连接（即发回一个 FIN 数据包）。
+client.on("end", () => {
+    console.log("客户端结束了");
+});
+
+// 一旦套接字完全关闭就触发。 参数 hadError 是布尔值，表示套接字是否由于传输错误而关闭。
+client.on("close", (hadError) => {
+    if (hadError) {
+        console.log("客户端有错误");
+    }
+    console.log("客户端关闭了");
+
+    client.destroy();
+});
 ```
 
 ## 属性
@@ -116,11 +133,15 @@ socket.connect({
 // path <string> 客户端应该连接到的路径。 请参阅标识 IPC 连接的路径。
 socket.connect("path", () => {});
 
-// 确保此套接字上不再发生 I/O 活动。 销毁流并关闭连接。
-socket.destroy(new Error("销毁"));
+// 如果整个数据被成功刷新到内核缓冲区，则返回 true。 如果所有或部分数据在用户内存中排队，则返回 false。 当缓冲区再次空闲时，将触发 'drain'。
+// 可选的 callback 参数将在数据最终写完时执行（可能不会立即执行）。
+socket.write("", "utf-8", () => {});
 
 // 半关闭套接字。 即，它发送一个 FIN 数据包。 服务器可能仍会发送一些数据。
 socket.end("", "utf-8", () => {});
+
+// 确保此套接字上不再发生 I/O 活动。 销毁流并关闭连接。
+socket.destroy(new Error("销毁"));
 
 // 暂停读取数据。 也就是说，不会触发 'data' 事件。 用于限制上传。
 socket.pause();
@@ -148,8 +169,4 @@ socket.setNoDelay(true);
 // 将套接字设置为在套接字上 timeout 毫秒不活动后超时。 默认情况下 net.Socket 没有超时。
 // 当空闲超时被触发时，套接字将收到 'timeout' 事件，但连接不会被切断。 用户必须手动调用 socket.end() 或 socket.destroy() 才能结束连接。
 socket.setTimeout(10000, () => {});
-
-// 如果整个数据被成功刷新到内核缓冲区，则返回 true。 如果所有或部分数据在用户内存中排队，则返回 false。 当缓冲区再次空闲时，将触发 'drain'。
-// 可选的 callback 参数将在数据最终写完时执行（可能不会立即执行）。
-socket.write("", "utf-8", () => {});
 ```
