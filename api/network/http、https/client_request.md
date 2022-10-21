@@ -46,11 +46,6 @@
 const req = http.request(
   "", // url 可以是字符串或 URL 对象,如果 url 是字符串，则会自动使用 new URL() 解析。 如果是 URL 对象，则会自动转换为普通的 options 对象
   {
-    // <http.Agent> | <boolean> 控制 Agent 的行为。 可能的值：
-    //     undefined（默认）: 为此主机和端口使用 http.globalAgent。
-    //     Agent 对象: 显式使用传入的 Agent。
-    //     false: 使用具有默认值的新 Agent。
-    agent: false,
     auth: "", // 本身份验证，即 'user:password' 计算授权标头
     // 当不使用 agent 选项时，生成用于请求的套接字/流的函数。 这可用于避免创建自定义 Agent 类只是为了覆盖默认的 createConnection 函数。 有关详细信息，请参阅 agent.createConnection()。 任何 Duplex 流都是有效的返回值
     createConnection: () => {},
@@ -64,11 +59,18 @@ const req = http.request(
     lookup: dns.lookup, // 自定义查找函数。 默认值: dns.lookup().
     method: "GET",
     path: "/", // 请求的路径。 应包括查询字符串（如果有）。 例如 '/index.html?page=12'。 当请求路径包含非法字符时抛出异常。 目前，只有空格被拒绝，但将来可能会改变。 默认值: '/'。
-    port: 80, // 远程服务器的端口。 默认值: 如果有设置则为 defaultPort，否则为 80。
-    protocol: "http:", // 要使用的协议。 默认值: 'http:'。
     setHost: true, //  指定是否自动添加 Host 标头。 默认为 true。
     socketPath: "", // Unix 域套接字（如果指定了 host 或 port 之一，则不能使用，因为其指定了 TCP 套接字）
     timeout: 1000, // 指定套接字超时的数值（以毫秒为单位）。 这将在连接套接字之前设置超时。
+
+    // HTTPS HTTP 共有
+    port: 80, // 远程服务器的端口。 默认值: 如果有设置则为 defaultPort，否则为 80。
+    protocol: "http:", // 要使用的协议。 默认值: 'http:'。
+    // <http.Agent> | <boolean> 控制 Agent 的行为。 可能的值：
+    //     undefined（默认）: 为此主机和端口使用 http.globalAgent。
+    //     Agent 对象: 显式使用传入的 Agent。
+    //     false: 使用具有默认值的新 Agent。
+    agent: false,
   },
   // 可选的 callback 参数将被添加为 'response' 事件的单次监听器。
   () => {}

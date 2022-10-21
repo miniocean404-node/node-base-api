@@ -33,7 +33,7 @@ cluster.setupPrimary(cluster.settings);
 
 ```js
 import cluster from "cluster";
-import http from "api/network/http/http_常量";
+import http from "api/network/http、https/http_常量";
 import os from "os";
 
 if (cluster.isPrimary) {

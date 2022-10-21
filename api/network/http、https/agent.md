@@ -26,6 +26,11 @@
 ## 初始化
 ```js
 const agent = new http.Agent({
+  // HTTPS 还包含 tls 的部分属性
+  maxCachedSessions: 100, // TLS 缓存会话的最大数量。 使用 0 禁用 TLS 会话缓存。 默认值: 100。
+  servername: "", // 要发送到服务器的服务器名称指示扩展的值。 使用空字符串 '' 禁用发送扩展名。 默认值: 目标服务器的主机名，除非使用 IP 地址指定目标服务器，在这种情况下，默认为 ''（无扩展名）。
+   
+  // HTTP
   //  即使没有未完成的请求，也要保留套接字，这样它们就可以用于未来的请求，而无需重新建立 TCP 连接。
   //  不要与 Connection 标头的 keep-alive 值混淆。
   //  使用代理时总是发送 Connection: keep-alive 标头，除非显式指定了 Connection 标头或当 keepAlive 和 maxSockets 选项分别设置为 false 和 Infinity，在这种情况下将使用 Connection: close。
@@ -46,6 +51,11 @@ const agent = new http.Agent({
   // 这将在创建套接字时设置超时
   timeout: 1000,
 });
+
+// line <Buffer> ASCII 文本行，采用 NSS SSLKEYLOGFILE 格式。
+// tlsSocket <tls.TLSSocket> 生成它的 tls.TLSSocket 实例。
+// 当此代理管理的连接生成或接收密钥材料时（通常在握手完成之前，但不一定），则会触发 keylog 事件。 该密钥材料可以存储用于调试，因为它允许对捕获的 TLS 流量进行解密。 它可以为每个套接字多次触发。
+https.globalAgent.on("keylog", (line, tlsSocket) => {});
 
 // 生成用于 HTTP 请求的套接字/流
 // 默认情况下，此函数与 net.createConnection() 相同。 但是，如果需要更大的灵活性，自定义代理可能会覆盖此方法
