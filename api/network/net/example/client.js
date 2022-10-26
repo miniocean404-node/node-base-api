@@ -7,8 +7,8 @@ const net = require("net");
 const client = net.connect({
   port: 8128,
   host: "127.0.0.1",
-  localPort: 31234,
-  localAddress: "127.0.0.1",
+  family: 0,
+  allowHalfOpen: true,
 });
 
 // 接收到数据时触发。 参数 data 将是 Buffer 或 String。 数据的编码由 client.setEncoding() 设置。
@@ -24,7 +24,7 @@ client.on("connect", () => {});
 
 // 当套接字准备好使用时触发。'connect' 后立即触发。
 client.on("ready", () => {
-  client.write(`我是 ${client.address()}`, "utf-8", () => {});
+  client.write(`我是 ${JSON.stringify(client.address())}`, "utf-8", () => {});
 
   client.end();
 });
@@ -48,9 +48,7 @@ client.on("end", () => {
 
 // 一旦套接字完全关闭就触发。 参数 hadError 是布尔值，表示套接字是否由于传输错误而关闭。
 client.on("close", (hadError) => {
-  if (hadError) console.log("客户端有错误");
-
-  console.log("客户端关闭了");
-
-  client.destroy();
+  if (!hadError) {
+    console.log("客户端关闭了");
+  }
 });

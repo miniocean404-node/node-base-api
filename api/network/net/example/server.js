@@ -34,18 +34,13 @@ server.on("listening", () => {
 
 // 建立新连接时触发。 socket.是 net.Socket 的实例。
 server.on("connection", (client_sock) => {
-  console.log(
-    "客户端请求来了",
-    "ip:",
-    client_sock.remoteAddress,
-    "port",
-    client_sock.remotePort
-  );
+  const { remoteAddress, remotePort } = client_sock;
+  console.log("客户端请求来了", "ip:", remoteAddress, "port", remotePort);
 
   client_sock.setEncoding("utf-8");
   // 接收到客户端的数据，调用这个函数
   client_sock.on("data", (data) => {
-    console.log("客户端数据");
+    console.log(`客户端数据: ${data}`);
   });
 
   // 向客户端响应
@@ -59,5 +54,5 @@ server.on("error", (err) => {});
 
 // 服务器关闭时触发。
 server.on("close", () => {
-  console.log("服务端关闭了");
+  // console.log("服务端关闭了");
 });

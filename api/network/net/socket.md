@@ -115,7 +115,7 @@ socket.connect({
   port: 8080, // 必需的。 套接字应连接到的端口
   host: "localhost", // 套接字应连接到的主机。 默认值: 'localhost'。
   localAddress: "localhost", // 套接字应该连接的本地地址。
-  localPort: 3000, // 套接字应连接的本地端口。
+  localPort: 3000, // 套接字应连接的本地端口。 nodemon 本地端口绑定时，会导致占用，使用 nodemon 不写本地端口
   family: 0, // IP 堆栈的版本。 必须是 4、6 或 0。 值 0 表示允许 IPv4 和 IPv6 地址。 默认值: 0
   hints: 0, // 可选的 dns.lookup() 提示。
   lookup: dns.lookup, // 自定义查找函数。 默认值: dns.lookup().
@@ -128,6 +128,10 @@ socket.connect({
     buffer: Buffer.alloc(10), // 用于存储传入数据的可重用内存块或返回此类数据的函数。
     callback(bytesWritten, buf) {}, // 为每个传入数据块调用此函数。 传给它的有两个参数：写入 buffer 的字节数和对 buffer 的引用。 从此函数返回 false 以隐式 pause() 套接字。 该函数将在全局上下文中执行。
   },
+  fd:0,
+  allowHalfOpen:false, // allowHalfOpen 设置为 true，套接字将不会自动将其可写端 end()
+  readable:false, // 当传入 fd 时，则允许在套接字上读取
+  writable:false, // 当传入 fd 时，则允许在套接字上写入
 });
 
 // path <string> 客户端应该连接到的路径。 请参阅标识 IPC 连接的路径。
